@@ -1,37 +1,31 @@
-struct item{       /* 項目用構造体 */
-  char *word;
-  char *mean;
-};
+/*  myd.h Copyright (C) 2000-2001 Hironori FUJII
+ */
 
-extern struct item *item_array;  /* 項目の配列 */
-extern int n_item;               /* 総項目数 */
+typedef struct myd_tag * MYD;
 
-#define MAX_WORD_LEN 256
+/* return 0 if cannot open
+ * オープンに失敗すると0を返します
+ */
+MYD myd_open(char *filename);
 
-struct _keyword{           /* 二分探索用構造体 */
-  char word[MAX_WORD_LEN];  /* 検索文字列 */
-  int cursor;      /* 検索文字列のカーソル位置 */
-  int f;           /* 二分探索のあたま */
-  int l;           /* 二分探索のしっぽ */
-  int begin;       /* ヒット開始位置 */
-  int hit;         /* ヒット数 */
-  int match_len;
-};
+void myd_close(MYD m);
 
-extern struct _keyword keyword;
 
-int read_dic(char *dic_filename);
-void kw_change();
-int kw_is_hit();
-void kw_cur_head();
-void kw_cur_tail();
-void kw_cur_back();
-void kw_cur_forward();
-void kw_back_space();
-void kw_del_char();
-void kw_ins_char(int ch);
-void kw_set_str(char *str);
-void kw_kill();
-void kw_clear();
-void search();
+/* binary search 
+ * index に検索にマッチする最初の項目を返します
+ * 返り値はマッチする項目の数
+ */
+int myd_bsearch(MYD m, char *word, int *index);
 
+/* index is from 0 to myd_n_keys() - 1. 0 <= index < myd_n_keys() .
+ * index番目の項目のキーを返します。
+ */
+char* myd_key(MYD m, int index);
+
+char* myd_text(MYD m, int index);
+
+
+/* return the number of items in m.
+ * 項目数を返します
+ */
+int myd_n_index(MYD m);

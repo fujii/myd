@@ -63,8 +63,13 @@ PACKAGE = @PACKAGE@
 VERSION = @VERSION@
 
 bin_PROGRAMS = myd
-myd_SOURCES = myd.c myd.h main.c getsel.c getsel.h
 
+myd_SOURCES = myd.c myd.h main.c getsel.c getsel.h 	term.c term.h 	edit.c edit.h
+
+
+myd_LDADD = ${X_LIBS} ${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS}
+
+AM_CFLAGS = ${X_CFLAGS}
 AM_CPPFLAGS = -DPKGDATADIR=\"${pkgdatadir}\"
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
@@ -80,8 +85,7 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-myd_OBJECTS =  myd.o main.o getsel.o
-myd_LDADD = $(LDADD)
+myd_OBJECTS =  myd.o main.o getsel.o term.o edit.o
 myd_DEPENDENCIES = 
 myd_LDFLAGS = 
 CFLAGS = @CFLAGS@
@@ -194,13 +198,19 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
+edit.o: edit.c edit.h
+getsel.o: getsel.c getsel.h
+main.o: main.c ../config.h myd.h edit.h term.h getsel.h
+myd.o: myd.c myd.h
+term.o: term.c term.h
+
 info-am:
 info: info-am
 dvi-am:

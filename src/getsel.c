@@ -1,12 +1,18 @@
+/* getsel.c
+ *  Copyright (C) 2000-2001 Hironori FUJII
+ */
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 
+#include <unistd.h>
+
+#include "getsel.h"
+
 static Display *x_display = 0;
 static Window window;
-static Atom data_prop;
-
 
 /*
  *  セレクションを取得する。
@@ -20,42 +26,53 @@ int get_sel(char *str, int size){
   unsigned long bytes_after_return;
   XEvent report;
 
+  int i;
+
   if(!x_display)
     return 0;
 
   XConvertSelection(x_display, XA_PRIMARY, XA_STRING,
-		    data_prop, window, CurrentTime);
+		    XA_STRING, window, CurrentTime);
 
-  while(1){
-    XNextEvent(x_display, &report);
-    switch(report.type){
-
-    case SelectionNotify:
-      if(report.xselection.property == None)
-	return 0;
-
-      XGetWindowProperty(x_display, window,
-			 report.xselection.property,
-			 0,              /*long_offset*/
-			 size - 1,       /*long_length*/
-			 True,           /*delete*/
-			 AnyPropertyType,/*req_type*/
-			 &actual_type_return,
-			 &actual_format_return,
-			 &nitems_return,
-			 &bytes_after_return,
-			 &pch);
-      strncpy(str, pch, size - 1);
-      str[size - 1] = '\0';
-      XFree(pch);
-
-      return 1;
-    }
+  i = 0; 
+  while(False == XCheckTypedEvent(x_display, SelectionNotify, &report)){
+    /* kterm対策 : kterm はSelectionNotifyを送ってくれないこともあるようだ */
+    i ++;
+    if(i > 10)
+      return 0;
+    usleep(100);
   }
+
+  if(report.type == SelectionNotify){
+
+    if(report.xselection.property == None)
+      return 0;
+
+    XGetWindowProperty(x_display, window,
+		       report.xselection.property,
+		       0,              /*long_offset*/
+		       size - 1,       /*long_length*/
+		       True,           /*delete*/
+		       AnyPropertyType,/*req_type*/
+		       &actual_type_return,
+		       &actual_format_return,
+		       &nitems_return,
+		       &bytes_after_return,
+		       &pch);
+    if(!nitems_return)
+      return 0;
+
+    strncpy(str, pch, size - 1);
+    str[size - 1] = '\0';
+    XFree(pch);
+
+    return 1;
+  }
+
+  return 0;
 }
 
-int get_sel_init(){
-  char *display_name = 0;
+int get_sel_init(char *display_name){
   int screen_num;
 
   x_display = XOpenDisplay(display_name);
@@ -68,11 +85,10 @@ int get_sel_init(){
 			       BlackPixel(x_display, screen_num),
 			       WhitePixel(x_display, screen_num));
 
-  data_prop = XInternAtom(x_display, "STRING", False);
   return 1;
 }
 
-void get_sel_end(){
+void get_sel_end(void){
   if(x_display){
     XCloseDisplay(x_display);
     x_display = 0;
@@ -99,7 +115,7 @@ static char cs_now[MAX_CHECK_SEL_SIZE];
  *  セレクションが変更されていたらその内容を指すchar*を返す。free()不要。
  *  変更が無ければ,0を返す。
  */
-char *check_sel(){
+char *check_sel(void){
   if(!get_sel(cs_now, MAX_CHECK_SEL_SIZE))
     return 0;
 
