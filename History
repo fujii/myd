@@ -1,0 +1,22 @@
+2.5
+	check_sel_format(char*)追加
+	大量のコンパイル警告を無くす
+	History 追加
+
+2.4
+	get_sel() -> get_sel(char*,int)
+	終了するキー ^X
+	
+2.3
+	外観の変更
+
+2.2
+	autoconf & automake を採用
+
+2.1
+	get_sel を Xt から X11使用へ
+
+2.0
+	セレクション対応
+
+1.0

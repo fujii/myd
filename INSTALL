@@ -1,0 +1,24 @@
+[必要なもの]
+
+   + X Window System
+   + ncurses
+   + getopt_long()
+
+[INSTALL]
+
+   ./configure
+   make
+   make install
+
+[辞書データの設定]
+
+   辞書データには、GENE一般英和辞書(以下、GENE)を使うことをおすすめします。
+   GENE は窓の杜から取ってきましょう。
+   GENEはの文字コードはシフトJIS(MS漢字コード)なので、
+   MyD で使用するには、文字コードを EUC-jp に変換します。
+   GENE のファイルを gene.txt とすると、
+
+   $ nkf -de < gene.txt > ~/.myd.dic
+
+   nkf で文字コードをシフトJISから EUC-jp に変換し、
+   ホームディレクトリに .myd.dic というファイル名で保存します。

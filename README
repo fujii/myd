@@ -1,36 +1,32 @@
-  MyD
 
-ncursesを用いた辞書検索プログラム
+ MyD  
+
+  セレクション対応辞書検索ツール
+  kterm や emacs で英単語をダブルクリックすれば検索されるので、
+  入力の手間いらず。
 
 [特徴]
- ・インクリメンタルサーチ
- ・二分探索による高速検索
- ・大文字小文字を区別しない。
- ・Emacs風キーバインド
+  ・kterm や emacs で英単語をダブルクリックすると検索される。
+  ・インクリメンタルサーチ
+  ・二分探索による高速検索
+  ・大文字小文字を区別しない。
+  ・Emacs風キーバインド
 
-[インストール]
-動作確認は Vine Linux 2.0 です。
+[原理]
+  kterm や emacs は英単語上でダブルクリックすると、
+  その単語がセレクション(Windowsでいうクリップボード)に
+  コピーされます。MyD は常にセレクションを常に監視し
+  セレクションの単語を検索、表示するのです。
+  また、英単語をドラッグで選択してもセレクションにコピーされます。
 
-$ make;make install
-
-でデフォルトでは /usr/local/bin に myd がインストールされます。
-後、手動で辞書ファイルを設定して下さい。
-
-[辞書データ]
-GENE一般英和辞書(以下、GENE)を使うことを前提にプログラムは作られています。
-GENEはの文字コードはシフトJIS(MS漢字コード)なので、
-MyD で使用するには、文字コードを EUC-jp に変換します。
-GENE のファイルを gene.txt とすると、
-
-$ nkf -e < gene.txt | tr -d \\r > ~/.myd.dic
-
-nkf で文字コードをシフトJISから EUC-jp に変換し、
-tr で改行コードを CR LF から LF に変換し、
-ホームディレクトリに .myd.dic というファイル名で保存します。
 
 [注意]
-当プログラムにおいて発生したいかなる障害であろうとも、
-当方では一切の責任を負いません。全て自己責任で使用して下さい。
+  当プログラムにおいて発生したいかなる障害であろうとも、
+  当方では一切の責任を負いません。全て自己責任で使用して下さい。
 
-copyright (c) 2000 Hironori FUJII
-mailto: e23037@edu.ipc.hiroshima-cu.ac.jp
+  copyright (c) 2000 Hironori FUJII
+  mailto:e23037@edu.ipc.hiroshima-cu.ac.jp
+  mailto:e23037@cr.info.hiroshima-cu.ac.jp
+  MyD Official Home Page:
+   http://www.edu.ipc.hiroshima-cu.ac.jp
+           /~e23037/prog/myd/
